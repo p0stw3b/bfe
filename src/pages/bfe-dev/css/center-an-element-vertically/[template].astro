@@ -1,0 +1,53 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import { Prism } from "@astrojs/prism";
+import solutions from "./templates/solution.css?raw";
+
+const getSolutionByTemplate = async (template) => {
+  switch (template) {
+    case "vanilla": {
+      const { default: Component } = await import(
+        "./templates/vanilla/index.html"
+      );
+      const { default: ComponentRaw } = await import(
+        "./templates/vanilla/index.html?raw"
+      );
+
+      return { Component, ComponentRaw, lang: "html" };
+    }
+    case "react": {
+      const { default: Component } = await import("./templates/react");
+      const { default: ComponentRaw } = await import(
+        "./templates/react/index.tsx?raw"
+      );
+
+      return { Component, ComponentRaw, lang: "tsx" };
+    }
+    case "lit": {
+      const { Lit: Component } = await import("./templates/lit");
+      const { default: ComponentRaw } = await import("./templates/lit?raw");
+
+      return { Component, ComponentRaw, lang: "ts" };
+    }
+  }
+};
+
+export function getStaticPaths() {
+  return [
+    { params: { template: "vanilla" } },
+    { params: { template: "react" } },
+    { params: { template: "lit" } },
+    { params: { template: undefined } },
+  ];
+}
+
+const { template } = Astro.params;
+
+const { Component, ComponentRaw, lang } = await getSolutionByTemplate(template);
+---
+
+<Layout>
+  <Prism slot="styles" code={solutions} lang="css" />
+  <Prism slot="markup" code={ComponentRaw} lang={lang} />
+  <Component slot="demo" />
+</Layout>

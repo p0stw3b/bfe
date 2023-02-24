@@ -1,0 +1,27 @@
+---
+const template = Astro.params.template || 'vanilla';
+---
+
+<select id="selectTemplate">
+    <option selected={template === 'vanilla'} value="vanilla">vanilla</option>
+    <option selected={template === 'react'} value="react">React</option>
+    <option selected={template === 'vue'} value="vue">Vue</option>
+    <option selected={template === 'lit'} value="lit">lit</option>
+    <option selected={template === 'svelte'} value="svelte">Svelte</option>
+    <option selected={template === 'preact'} value="preact">preact</option>
+</select>
+<script>
+    const url = globalThis.location
+      const urlString = url.href
+
+    document.querySelector('#selectTemplate').addEventListener('change', (e) => {
+        const newTemplate = e.target.value;
+        const currentTemplate = globalThis.location.href.split('/')[globalThis.location.href.split('/').length - 2]
+
+      const replaceTemplate = new RegExp(`${currentTemplate}\/$`)
+
+      const newUrl = urlString.replace(replaceTemplate, newTemplate + '/')
+
+      url.replace(newUrl)
+      })
+</script>
